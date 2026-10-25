@@ -14,7 +14,15 @@ enum WeightUnit: String, Codable, CaseIterable {
 
     func dualText(_ value: Double) -> String {
         guard value.isFinite else { return "—" }
-        return "\(value.weightText) \(label)（≈ \(convertedText(value))）"
+        return "\(displayText(value)) \(label)（≈ \(convertedText(value))）"
+    }
+
+    func displayText(_ value: Double, grouping: Bool = true) -> String {
+        guard value.isFinite else { return "" }
+        let displayed = self == .lbs ? value.rounded(.towardZero) : value
+        return displayed.formatted(.number
+            .grouping(grouping ? .automatic : .never)
+            .precision(.fractionLength(0...(self == .lbs ? 0 : 2))))
     }
 
     func convertedText(_ value: Double) -> String {

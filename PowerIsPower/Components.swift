@@ -15,7 +15,7 @@ struct ExerciseRow: View {
             Text(exercise.name)
                 .font(.headline)
             HStack(alignment: .firstTextBaseline, spacing: 5) {
-                Text(exercise.weight.weightText)
+                Text(exercise.unit.displayText(exercise.weight))
                     .font(.system(.title, design: .rounded, weight: .bold))
                 Text(exercise.unit.label).foregroundStyle(.secondary)
                 Text("×").foregroundStyle(.secondary).padding(.horizontal, 6)

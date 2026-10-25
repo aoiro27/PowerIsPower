@@ -114,11 +114,11 @@ struct CycleEditor: View {
                         }
                         .pickerStyle(.segmented)
                         .accessibilityLabel("入力単位")
-                        NumberField(title: "重量", unit: exercise.unit.label, value: $exercise.weight)
+                        NumberField(title: "重量", unit: exercise.unit, value: $exercise.weight)
                             .id("weight-\(exercise.unit.rawValue)")
                         Text(exercise.unit.dualText(exercise.weight))
                             .font(.caption).foregroundStyle(.secondary)
-                        NumberField(title: "追加重量", unit: exercise.unit.label, value: $exercise.increment)
+                        NumberField(title: "追加重量", unit: exercise.unit, value: $exercise.increment)
                             .id("increment-\(exercise.unit.rawValue)")
                         Text(exercise.unit.dualText(exercise.increment))
                             .font(.caption).foregroundStyle(.secondary)
@@ -167,7 +167,7 @@ struct CycleEditor: View {
 
 struct NumberField: View {
     let title: String
-    let unit: String
+    let unit: WeightUnit
     @Binding var value: Double
     @State private var text = ""
 
@@ -175,19 +175,17 @@ struct NumberField: View {
         HStack {
             Text(title)
             Spacer(minLength: 16)
-            TextField(title, text: Binding(
+            SelectAllNumberField(title: title, keyboardType: .decimalPad, text: Binding(
                 get: { text },
                 set: { newValue in
                     text = newValue
-                    value = (try? Double(newValue, format: .number.locale(.current))) ?? .nan
+                    let input = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
+                    value = input.isEmpty ? 0 : ((try? Double(input, format: .number.locale(.current))) ?? .nan)
                 }
             ))
-                .keyboardType(.decimalPad)
-                .multilineTextAlignment(.trailing)
-                .accessibilityLabel(title)
-            Text(unit).foregroundStyle(.secondary)
+            Text(unit.label).foregroundStyle(.secondary)
         }
-        .onAppear { text = value.isFinite ? value.formatted(.number.grouping(.never).precision(.fractionLength(0...6))) : "" }
+        .onAppear { text = unit.displayText(value, grouping: false) }
     }
 }
 
@@ -199,13 +197,66 @@ struct RepsField: View {
         HStack {
             Text("回数")
             Spacer(minLength: 16)
-            TextField("回数", text: $text)
-                .keyboardType(.numberPad)
-                .multilineTextAlignment(.trailing)
-                .accessibilityLabel("回数")
+            SelectAllNumberField(title: "回数", keyboardType: .numberPad, text: $text)
             Text("回").foregroundStyle(.secondary)
         }
         .onAppear { text = String(value) }
         .onChange(of: text) { _, newValue in value = Int(newValue) ?? 0 }
+    }
+}
+
+struct SelectAllNumberField: UIViewRepresentable {
+    let title: String
+    let keyboardType: UIKeyboardType
+    @Binding var text: String
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(text: $text)
+    }
+
+    func makeUIView(context: Context) -> UITextField {
+        let field = UITextField()
+        field.delegate = context.coordinator
+        field.textAlignment = .right
+        field.font = .preferredFont(forTextStyle: .body)
+        field.adjustsFontForContentSizeCategory = true
+        field.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        field.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        field.addTarget(context.coordinator, action: #selector(Coordinator.textChanged(_:)), for: .editingChanged)
+        let toolbar = UIToolbar()
+        toolbar.items = [
+            UIBarButtonItem(systemItem: .flexibleSpace),
+            UIBarButtonItem(title: "完了", style: .done, target: field, action: #selector(UIResponder.resignFirstResponder))
+        ]
+        toolbar.sizeToFit()
+        field.inputAccessoryView = toolbar
+        return field
+    }
+
+    func updateUIView(_ field: UITextField, context: Context) {
+        context.coordinator.text = $text
+        field.placeholder = title
+        field.accessibilityLabel = title
+        field.keyboardType = keyboardType
+        if field.text != text { field.text = text }
+    }
+
+    final class Coordinator: NSObject, UITextFieldDelegate {
+        var text: Binding<String>
+
+        init(text: Binding<String>) {
+            self.text = text
+        }
+
+        @objc func textChanged(_ field: UITextField) {
+            text.wrappedValue = field.text ?? ""
+        }
+
+        func textFieldDidBeginEditing(_ field: UITextField) {
+            DispatchQueue.main.async { [weak field] in
+                guard let field, field.isFirstResponder else { return }
+                field.selectAll(nil)
+            }
+        }
     }
 }

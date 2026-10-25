@@ -2,6 +2,16 @@ import XCTest
 @testable import PowerIsPower
 
 final class TrainingStateTests: XCTestCase {
+    func testPoundsDisplayIsIntegerIncludingEditorAfterUnitChange() {
+        var exercise = Exercise(name: "ロー", weight: 59, increment: 2.5, reps: 10)
+        exercise.changeUnit(to: .lbs)
+        XCTAssertEqual(exercise.unit.displayText(exercise.weight, grouping: false), "131")
+        XCTAssertEqual(exercise.unit.displayText(exercise.increment, grouping: false), "5")
+        XCTAssertEqual(exercise.unit.displayText(exercise.weight), "131")
+        XCTAssertEqual(WeightUnit.kg.displayText(2.5, grouping: false), 2.5.formatted(.number))
+        XCTAssertEqual(exercise.weight, 59 / 0.45, accuracy: 0.0000001)
+    }
+
     func testWeightConversionInBothDirections() {
         XCTAssertEqual(WeightUnit.lbs.convert(100, to: .kg), 45, accuracy: 0.0000001)
         XCTAssertEqual(WeightUnit.kg.convert(45, to: .lbs), 100, accuracy: 0.0000001)
