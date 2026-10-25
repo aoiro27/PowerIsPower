@@ -1,0 +1,8 @@
+# アプリアイコン
+
+生成方法：組み込みimage_gen。採用案は、もちのような丸い体で小さな力こぶを自慢するかわいいマスコット。
+アプリ用画像：`PowerIsPower/Assets.xcassets/AppIcon.appiconset/AppIcon.png`（1024×1024、背景あり）。
+
+## 生成プロンプト
+
+Create one finished iPhone app icon for Power Is Power, a Japanese workout tracker, expressing 力こそパワー！ in a VERY CUTE lovable silly way. 1024x1024 square full-bleed opaque image, no rounded canvas corners. A tiny chubby mochi-like mascot with a huge round head, small dot eyes far apart, tiny happy open smile, rosy peach cheeks, very short rounded legs, tiny stubby arms doing a double-biceps flex with just two small adorable round biceps. The joke: this little soft marshmallow creature is extremely proud of its very tiny muscles. Head takes up half the character, body soft and simple. NOT a bodybuilder: NO defined chest, NO pectorals, NO six-pack, NO veins, NO realistic muscles, NO huge teeth, NO square jaw, NO humanoid anatomy detail. Japanese kawaii stationery mascot aesthetic, minimal clean chunky shapes, soft hand-drawn dark outlines, simple flat colors, like a friendly little rice cake. Character pale warm cream with a lime-green sweatband, tiny lime-green shorts. Dark charcoal #0E1111 full-bleed backdrop matching app; little lime #C5F559 energetic sparkle beside each flexed tiny arm. Centered character occupies central 75% with ample safe margin, readable at small icon size, clean professional adorable app icon. No text, no letters, no watermark, no phone mockup, no transparency. Only one character and no other objects. The overall feeling should be 'awww, this little guy thinks he is so strong!' rather than macho.
